@@ -1,0 +1,12 @@
+FROM linuxserver/webtop:fedora-xfce-bfe925ad-ls7
+
+# Upstream starts Xvfb with a 15360x8640 screen, which pins ~600 MB for the
+# framebuffer alone and OOM-kills the desktop on Railway's 512 MB Trial plan.
+# 4K is plenty; Selkies still resizes the desktop to the browser window.
+# Xfce, not KDE: fedora-kde had 4 OOM kills idle at 512 MB (2026-11-08), Xfce none at ~245 MB.
+ENV MAX_RES=3840x2160
+
+# ponytail: one custom-init script adds an unauthenticated /healthcheck
+# location for Railway's healthcheck prober; everything else is stock.
+COPY root/ /
+RUN chmod +x /custom-cont-init.d/20-healthcheck /custom-services.d/drop-file-cache /usr/local/bin/drop-file-cache
